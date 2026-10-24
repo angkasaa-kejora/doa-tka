@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Titip Doa TKA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap">
+<style>
+/* Layout: satu kartu slide dibingkai grid foto polaroid di empat sisi; halaman balasan berupa masonry kartu kecil. */
+:root{
+  --bg:#fff1f5; --ink:#4b2a3c; --muted:#8a6577; --card:#fffafc; --line:#f6c6d6;
+  --pink:#e8457c; --pink-soft:#ffd3e1; --blue:#d3e9ff; --butter:#fff0a6; --mint:#cff3e1; --lilac:#e8dcff;
+  --paper:#ffffff; --paper-ink:#8a5f74; --tape:rgba(255,160,196,.7);
+  --shadow:0 12px 28px rgba(232,69,124,.16); --on-pink:#ffffff; --hl:#ffe08a;
+  --f-display:'Fredoka',ui-rounded,'Nunito',system-ui,sans-serif;
+  --f-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Caveat','Bradley Hand','Segoe Script',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1f1320; --ink:#ffe8f0; --muted:#d8aec0; --card:#2c1a2e; --line:#5c3459;
+  --pink:#ff7aa6; --pink-soft:#4d2a47; --blue:#24405a; --butter:#5a5024; --mint:#25503f; --lilac:#41346a;
+  --paper:#fdf1f6; --paper-ink:#80566b; --tape:rgba(255,138,180,.6);
+  --shadow:0 12px 28px rgba(0,0,0,.4); --on-pink:#2a1226; --hl:#6e5a1f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1f1320; --ink:#ffe8f0; --muted:#d8aec0; --card:#2c1a2e; --line:#5c3459;
+  --pink:#ff7aa6; --pink-soft:#4d2a47; --blue:#24405a; --butter:#5a5024; --mint:#25503f; --lilac:#41346a;
+  --paper:#fdf1f6; --paper-ink:#80566b; --tape:rgba(255,138,180,.6);
+  --shadow:0 12px 28px rgba(0,0,0,.4); --on-pink:#2a1226; --hl:#6e5a1f; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+html{scroll-behavior:auto}
+body{
+  background-color:var(--bg);
+  background-image:radial-gradient(var(--line) 1.3px, transparent 1.6px);
+  background-size:24px 24px;
+  color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  padding-inline:max(16px, env(safe-area-inset-left,0px)) max(16px, env(safe-area-inset-right,0px));
+  padding-block:0 40px; overflow-x:hidden; min-height:100%;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.wrap{max-width:1020px;margin:0 auto;position:relative;z-index:1}
+
+/* floating stickers */
+.floaters{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.floaters span{position:absolute;font-size:30px;opacity:.8;animation:bob 6s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-14px) rotate(8deg)}}
+
+/* header */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:12px}
+.brand{font-family:var(--f-display);font-weight:600;font-size:20px;letter-spacing:.01em;display:flex;align-items:center;gap:8px}
+.brand small{font-family:var(--f-hand);font-size:22px;font-weight:700;color:var(--pink)}
+.nav{display:flex;gap:8px}
+.navbtn{border:2.5px solid var(--pink-soft);background:var(--card);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
+.navbtn[aria-current="page"]{background:var(--pink);border-color:var(--pink);color:var(--on-pink)}
+.count{background:var(--butter);color:var(--ink);border-radius:999px;padding:0 8px;font-size:12px;min-width:22px;text-align:center}
+
+/* slide card */
+.stage{padding-top:14px}
+.card{position:relative;background:var(--card);border:3px solid var(--pink-soft);border-radius:30px;box-shadow:var(--shadow)}
+.card.in-next{animation:inNext .35s ease-out}
+.card.in-prev{animation:inPrev .35s ease-out}
+@keyframes inNext{from{transform:translateX(28px)}to{transform:none}}
+@keyframes inPrev{from{transform:translateX(-28px)}to{transform:none}}
+.stk{position:absolute;font-size:34px;line-height:1;z-index:3;pointer-events:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.15))}
+.stk.a{top:-16px;left:-8px;transform:rotate(-14deg)}
+.stk.b{top:-14px;right:-8px;transform:rotate(12deg)}
+.stk.c{bottom:-16px;left:-6px;transform:rotate(10deg)}
+.stk.d{bottom:-14px;right:-8px;transform:rotate(-10deg)}
+
+.frame{display:grid;grid-template-columns:1fr;grid-template-areas:"top" "content" "bottom"}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:22px 20px 14px}
+.strip.top{grid-area:top}
+.strip.bottom{grid-area:bottom;padding:14px 20px 24px}
+.side{display:none;grid-area:left;flex-direction:column;gap:22px;padding:22px 6px 22px 22px;justify-content:center}
+.side.right{grid-area:right;padding:22px 22px 22px 6px}
+.content{grid-area:content;min-width:0;padding:10px 22px}
+@media (min-width:640px){
+  .strip{grid-template-columns:repeat(4,1fr);gap:18px}
+}
+@media (min-width:860px){
+  .frame{grid-template-columns:150px minmax(0,1fr) 150px;grid-template-areas:"top top top" "left content right" "bottom bottom bottom"}
+  .side{display:flex}
+  .content{padding:10px 14px}
+}
+
+.pol{margin:0;position:relative;background:var(--paper);padding:5px 5px 6px;border-radius:3px;box-shadow:0 5px 12px rgba(0,0,0,.18);transform:rotate(var(--r,0deg));transition:transform .25s}
+.pol::before{content:"";position:absolute;top:-8px;left:50%;width:42%;height:15px;margin-left:-21%;background:var(--tape);transform:rotate(-4deg);border-radius:2px;z-index:2}
+.pol img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px;background:var(--pink-soft)}
+.pol figcaption{font-family:var(--f-hand);font-weight:700;font-size:17px;line-height:20px;color:var(--paper-ink);text-align:center;height:20px;overflow:hidden;white-space:nowrap}
+@media (max-width:639px){.pol figcaption{display:none}.pol{padding-bottom:5px}}
+@media (hover:hover){.pol:hover{transform:rotate(0) scale(1.07);z-index:4}}
+
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--lilac);border-radius:999px;padding:4px 14px;font-family:var(--f-hand);font-weight:700;font-size:23px;line-height:1.2;transform:rotate(-2deg)}
+.text{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.text p{margin:0;font-size:clamp(16px,2.3vw,18px);line-height:1.8;overflow-wrap:anywhere}
+.text p.greet{font-family:var(--f-display);font-weight:600;font-size:clamp(26px,5vw,34px);line-height:1.2;color:var(--pink)}
+.text p.amin{font-family:var(--f-hand);font-weight:700;font-size:clamp(28px,5vw,36px);line-height:1.2;color:var(--pink);text-align:center;margin-top:4px}
+.hl{background:linear-gradient(transparent 55%,var(--hl) 55%,var(--hl) 92%,transparent 92%);font-weight:700;padding:0 2px}
+
+/* replies strip under slide text */
+.rstrip{margin-top:20px;border-top:2.5px dashed var(--line);padding-top:12px;min-width:0}
+.rstrip-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--f-display);font-weight:500;font-size:15px}
+.link{background:none;border:0;color:var(--pink);font-weight:700;font-size:14px;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
+.rrow{display:flex;gap:12px;overflow-x:auto;padding:10px 4px 14px;scroll-snap-type:x proximity}
+.mini{flex:0 0 190px;scroll-snap-align:start;border-radius:16px;padding:10px 12px;font-size:14px;line-height:1.45;position:relative;color:var(--ink);transform:rotate(var(--r,0deg))}
+.mini b{display:block;font-family:var(--f-display);font-weight:600;font-size:15px}
+.mini span.s{position:absolute;top:-8px;right:-4px;font-size:22px}
+.mini p{margin:2px 0 0;overflow-wrap:anywhere}
+.c0{background:var(--butter)}.c1{background:var(--pink-soft)}.c2{background:var(--blue)}.c3{background:var(--lilac)}.c4{background:var(--mint)}
+.empty{margin:0;color:var(--muted);font-size:14px;padding:8px 0}
+
+/* controls */
+.controls{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:22px 4px 8px;flex-wrap:wrap}
+.btn{border:2.5px solid var(--pink);background:var(--card);color:var(--pink);border-radius:999px;padding:9px 18px;font-weight:700;font-size:15px;transition:transform .15s}
+.btn.solid{background:var(--pink);color:var(--on-pink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+@media (hover:hover){.btn:not(:disabled):hover{transform:translateY(-2px)}}
+.dots{display:flex;gap:8px;align-items:center}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--pink);background:transparent;padding:0}
+.dot[aria-current="true"]{background:var(--pink);width:28px;border-radius:999px}
+
+/* form (slide 4) */
+.tabs{display:flex;gap:6px;background:var(--pink-soft);border-radius:999px;padding:5px;margin-top:14px;width:max-content;max-width:100%}
+.tab{border:0;background:transparent;border-radius:999px;padding:7px 16px;font-weight:700;font-size:14px}
+.tab[aria-selected="true"]{background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.form{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.form h2{font-family:var(--f-display);font-weight:600;font-size:clamp(22px,4vw,28px);line-height:1.2;margin:0}
+.form p.sub{margin:-6px 0 0;color:var(--muted);font-size:15px}
+.field label{display:block;font-family:var(--f-hand);font-weight:700;font-size:22px;line-height:1.2;margin-bottom:4px}
+.field input,.field textarea{width:100%;background:var(--paper);color:#4b2a3c;border:2.5px solid var(--line);border-radius:16px;padding:10px 14px;font:inherit;font-size:16px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--pink)}
+.stks{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:360px}
+.stks input{position:absolute;opacity:0;pointer-events:none}
+.stks label{display:grid;place-items:center;aspect-ratio:1;border-radius:14px;background:var(--lilac);font-size:26px;cursor:pointer;border:3px solid transparent;margin:0;font-family:inherit}
+.stks input:checked + label{border-color:var(--pink);background:var(--pink-soft);transform:rotate(-6deg) scale(1.08)}
+.stks input:focus-visible + label{outline:3px solid var(--pink);outline-offset:2px}
+.err{color:var(--pink);font-weight:700;margin:0;min-height:1.4em;font-size:15px}
+.panel{margin-top:16px;background:var(--mint);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.panel h2{font-family:var(--f-display);font-weight:600;font-size:24px;margin:0}
+.panel p{margin:0}
+.login{width:100%;max-width:420px;margin:10px auto 0;text-align:left;align-items:stretch}
+.login .btn{align-self:flex-start}
+.panel textarea{width:100%;min-height:130px;background:var(--paper);color:#4b2a3c;border:2.5px solid var(--line);border-radius:14px;padding:10px 12px;font:inherit;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+
+/* replies view */
+.hero{padding-top:14px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.hero .mosaic{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%;max-width:560px;padding:8px 6px}
+.hero h1{font-family:var(--f-display);font-weight:600;font-size:clamp(30px,7vw,48px);line-height:1.1;margin:0;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--pink)}
+.hero p{margin:0;color:var(--muted);max-width:46ch}
+.masonry{columns:1;column-gap:22px;padding:26px 4px}
+@media (min-width:640px){.masonry{columns:2}}
+@media (min-width:960px){.masonry{columns:3}}
+.reply{break-inside:avoid;display:block;position:relative;margin:0 0 26px;padding:22px 20px 18px;color:var(--ink);transform:rotate(var(--r,0deg));box-shadow:0 8px 18px rgba(0,0,0,.12);animation:pop .4s ease-out}
+@keyframes pop{from{transform:scale(.95) rotate(var(--r,0deg))}to{transform:scale(1) rotate(var(--r,0deg))}}
+.reply .bigstk{position:absolute;top:-16px;right:-6px;font-size:40px;line-height:1;transform:rotate(14deg);filter:drop-shadow(0 3px 3px rgba(0,0,0,.18))}
+.reply .who{font-family:var(--f-display);font-weight:600;font-size:21px;line-height:1.2;margin:0;padding-right:36px;overflow-wrap:anywhere}
+.reply .when{font-size:12.5px;color:var(--muted);margin:2px 0 8px}
+.reply h4{font-family:var(--f-hand);font-weight:700;font-size:22px;line-height:1.1;margin:10px 0 2px;color:var(--pink)}
+.reply p{margin:0;font-size:16px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.reply .del{margin-top:12px;border:2px solid var(--pink);background:transparent;color:var(--pink);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700}
+.v0{background:var(--butter);border-radius:6px}
+.v0::before{content:"";position:absolute;top:-10px;left:50%;width:90px;height:20px;margin-left:-45px;background:var(--tape);transform:rotate(-3deg);border-radius:2px}
+.v1{background:var(--pink-soft);border-radius:20px;outline:2.5px dashed var(--pink);outline-offset:-9px}
+.v1::after{content:"💗";position:absolute;bottom:-12px;left:18px;font-size:26px}
+.v2{background:var(--blue);border-radius:26px 26px 26px 6px}
+.v2::after{content:"";position:absolute;left:0;bottom:-14px;border:14px solid transparent;border-top-color:var(--blue);border-left-color:var(--blue);border-bottom:0;border-right:0}
+.v3{background:var(--lilac);border-radius:28px;border:3px dotted var(--pink)}
+.v4{background:var(--mint);border-radius:14px;border-top:10px solid var(--pink)}
+.v4 .when::before{content:"balasan • "}
+.skel{background:var(--pink-soft);min-height:120px;border-radius:20px;animation:pulse 1.1s ease-in-out infinite alternate}
+.sk{height:14px;border-radius:8px;background:var(--card);opacity:.75;margin:12px 0}
+.sk.l1{width:55%}.sk.l2{width:90%}.sk.l3{width:70%}
+@keyframes pulse{from{opacity:.55}to{opacity:1}}
+.note{text-align:center;color:var(--muted);padding:30px 10px;font-size:16px}
+.note .btn{margin-top:12px}
+.back{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-top:6px}
+
+@media (prefers-reduced-motion: reduce){
+  .floaters span,.card.in-next,.card.in-prev,.reply,.skel{animation:none}
+  .pol,.btn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="floaters" aria-hidden="true">
+  <span style="left:3%;top:18%;animation-delay:0s">🌸</span>
+  <span style="right:3%;top:26%;animation-delay:-1.5s">🦋</span>
+  <span style="left:2%;top:58%;animation-delay:-3s">🎀</span>
+  <span style="right:2%;top:68%;animation-delay:-2s">✨</span>
+  <span style="left:6%;top:86%;animation-delay:-4s">📚</span>
+  <span style="right:6%;top:90%;animation-delay:-0.8s">🌷</span>
+  <span style="left:48%;top:96%;animation-delay:-2.6s">☁️</span>
+</div>
+
+<div class="wrap">
+  <header class="bar">
+    <div class="brand"><span>🤍</span> Titip Doa TKA <small>Dasa Semesta</small></div>
+    <nav class="nav" aria-label="Halaman">
+      <button class="navbtn" type="button" data-go="doa" aria-current="page">🤲 Doa</button>
+      <button class="navbtn" type="button" data-go="balasan">💌 Balasan <span class="count" id="navcount">0</span></button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="view-doa" class="stage" aria-label="Slide doa">
+      <article class="card" id="card"></article>
+      <div class="controls">
+        <button class="btn" type="button" id="prev">‹ Sebelumnya</button>
+        <div class="dots" id="dots" role="group" aria-label="Pilih slide"></div>
+        <button class="btn solid" type="button" id="next">Lanjut ›</button>
+      </div>
+    </section>
+
+    <section id="view-balasan" hidden aria-label="Balasan">
+      <div class="hero">
+        <div class="mosaic" id="mosaic"></div>
+        <h1>Balasan dari <em>kalian</em> 💌</h1>
+        <p>Kesan dan pesan yang masuk untuk kami. Terima kasih sudah mendoakan 🤍</p>
+        <div class="back">
+          <button class="btn" type="button" data-go="doa">‹ Kembali ke doa</button>
+          <button class="btn solid" type="button" id="write-from-list">✍️ Tulis balasan</button>
+          <button class="btn" type="button" id="reload-list">↻ Muat ulang</button>
+          <button class="btn" type="button" id="logout-btn" hidden>🔒 Keluar</button>
+        </div>
+      </div>
+      <div id="replies-body"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Tempel URL Web App dari Google Apps Script di sini (lihat PANDUAN.md). Berakhiran /exec */
+  var API_URL = "https://script.google.com/macros/s/AKfycbyxl5JC4fhIqz-OLbCVREkhbhLXEDttNlLvyBwHI4h6TxM8MBm6f7xcdKDn-Vh4VypD/exec";
+  /* Opsional: nomor WhatsApp cadangan, format 628xxxxxxxxxx */
+  var WA_NUMBER = "";
+
+  var PHOTOS = {
+    a_full:{src:"img/a_full.jpg",cap:"kita 🤍"},
+    a_left:{src:"img/a_left.jpg",cap:"bestie 🎀"},
+    a_right:{src:"img/a_right.jpg",cap:"peace ✌️"},
+    b_all:{src:"img/b_all.jpg",cap:"kebaya day 🌸"},
+    b_left:{src:"img/b_left.jpg",cap:"cantik-cantik ✨"},
+    b_right:{src:"img/b_right.jpg",cap:"bareng terus"},
+    c_left:{src:"img/c_left.jpg",cap:"happy 😆"},
+    c_right:{src:"img/c_right.jpg",cap:"semangat!"},
+    c_bouq:{src:"img/c_bouq.jpg",cap:"buket jajan 🍫"},
+    d_all:{src:"img/d_all.jpg",cap:"buku TKA 📚"},
+    d_one:{src:"img/d_one.jpg",cap:"TKA ✨"},
+    d_two:{src:"img/d_two.jpg",cap:"small steps 🌱"}
+  };
+  var ROT = [-5,3,-2,6,-4,2,5,-3];
+
+  var SLIDES = [
+    {chip:"🤲 Bismillah", stk:["🎀","🌸","🦋","✨"],
+     top:["a_full","b_all","d_one","c_left"], bottom:["b_right","c_bouq","a_right","d_two"], left:["a_left","d_all"], right:["c_right","b_left"],
+     paras:[
+      "Assalamu’alaikum, maaf yaa sebelumnya mengganggu waktunya sebentar. Aku mau minta doa dari kalian untuk kami, Annisa, Masya, Alisa, Ratih, dan Nayla, juga temen kami yang lain di Dasa Semesta kota bogor, juga kamu orang yang mendoakan,semoga kami semua diberikan kelancaran dan kemudahan dalam menghadapi TKA, diberikan ketenangan hati, kejernihan pikiran, serta kemampuan untuk memahami dan menjawab setiap soal dengan baik dan benar.",
+      "Mohon doanya juga semoga kami bisa mendapatkan nilai TKA yang istimewa, hasil yang memuaskan, serta diberikan kesempatan untuk menjadi siswa eligible Dasa Semesta Kota Bogor tahun 2026 dan lolos ke PTN yang kita impikan masing-masing. Semoga segala usaha, waktu, dan doa yang sudah kita perjuangkan selama ini membuahkan hasil terbaik",
+      "Semoga Allah memudahkan setiap urusan kita, menguatkan daya ingat dan pemahaman kita, serta memberikan hasil dari apa yang kita harapkan. Semoga perjuangan kita bisa membahagiakan kedua orang tua, menjadi jalan untuk meraih cita-cita, dan membawa keberkahan bagi masa depan kita",
+      "Terima kasih banyak sebelumnya atas doa baiknya. mohon maaf kalau selama kenal dengan kita,kita punya kesalahan atau ada kata-kata yang kurang berkenan,mohon maaf yang sebesar-besarnya yaa,mohon doa baik nya. semoga segala doa baik yang kalian berikan kembali kepada kalian dengan kebaikan yang serupa.",
+      {amin:"Aamiin ya Rabbal ‘alamin. 🤍"}
+     ]},
+    {chip:"🌷 Hallo hallo", stk:["🌷","⭐","🧸","🍓"],
+     top:["c_right","a_left","d_two","b_left"], bottom:["d_all","a_full","c_bouq","b_all"], left:["b_right","c_left"], right:["a_right","d_one"],
+     paras:[
+      {greet:"Hallo semuanya! 🤍"},
+      "Maaf yaa, sebelumnya mengganggu waktunya sebentar. Kami, Annisa, Masya, Alisa, Ratih, Nayla, dan teman-teman lainnya dari Dasa Semesta Kota Bogor, mohon doa terbaiknya untuk kelancaran TKA yang akan kami hadapi.",
+      "Semoga Allah memberikan ketenangan hati, kejernihan pikiran, kemudahan dalam memahami setiap soal, serta hasil yang terbaik. Semoga kami bisa meraih nilai TKA yang istimewa, menjadi siswa eligible Dasa Semesta Kota Bogor tahun 2026, dan lolos ke PTN impian masing-masing.",
+      "Semoga segala usaha, waktu, dan doa yang telah kami perjuangkan menjadi jalan untuk membahagiakan kedua orang tua dan meraih cita-cita.",
+      "Kami juga mohon maaf sebesar-besarnya apabila selama ini ada perkataan atau perbuatan yang kurang berkenan. Terima kasih banyak atas doa baiknya. Semoga setiap doa yang kalian berikan kembali kepada kalian dengan kebaikan yang berlipat ganda.",
+      {amin:"Aamiin ya Rabbal ‘alamin. 🤍"}
+     ]},
+    {chip:"✨ Cerita kami", stk:["🌈","📚","☁️","💗"],
+     top:["b_left","c_bouq","a_right","d_all"], bottom:["c_left","d_one","b_all","a_left"], left:["a_full","d_two"], right:["b_right","c_right"],
+     paras:[
+      {greet:"Hallo semuanya! 🤍"},
+      "Maaf yaa, izin mengganggu waktunya sebentar. Kami, Annisa, Masya, Alisa, Ratih, Nayla, dan teman-teman lainnya dari Dasa Semesta Kota Bogor, ingin meminta doa terbaik dari kalian untuk TKA yang akan kami hadapi.",
+      "Rasanya nggak terasa, perjalanan panjang yang penuh cerita, lelah, tangis, tawa, dan perjuangan akhirnya membawa kami sampai di titik ini. Ada banyak hal yang sudah kami lewati, banyak doa yang kami panjatkan, dan banyak harapan yang kami titipkan untuk masa depan.",
+      "Mohon doanya, semoga Allah memberikan kelancaran, ketenangan hati, kejernihan pikiran, serta kemudahan dalam menjawab setiap soal. Semoga kami mendapatkan nilai TKA yang terbaik, menjadi siswa eligible Dasa Semesta Kota Bogor tahun 2026, dan diberikan kesempatan untuk lolos ke PTN impian masing-masing.",
+      "Kami berharap, segala usaha dan perjuangan yang selama ini kami lakukan tidak berakhir sia-sia. Semoga suatu hari nanti, kami bisa melihat kembali perjalanan ini dengan penuh rasa syukur dan bangga, karena telah berjuang sebaik mungkin untuk masa depan yang kami impikan dan untuk membahagiakan kedua orang tua.",
+      "Kami juga mohon maaf sebesar-besarnya apabila selama mengenal kalian ada perkataan atau perbuatan yang kurang berkenan. Terima kasih untuk setiap doa, dukungan, dan kebaikan yang diberikan. Semoga segala doa baik yang kalian panjatkan kembali kepada kalian dengan kebaikan yang lebih indah.",
+      {amin:"Aamiin ya Rabbal ‘alamin. 🤍"}
+     ]},
+    {chip:"💌 Giliran kamu", form:true, stk:["💌","🍰","🐣","🌸"],
+     top:["d_two","a_full","c_right","b_all"], bottom:["a_right","d_one","b_right","c_left"], left:["c_bouq","a_left"], right:["d_all","b_left"], paras:[]}
+  ];
+
+  var STICKERS = ["🌸","🍓","🦋","🎀","🧸","☁️","⭐","🌈","🐣","🍰"];
+
+  var $ = function(id){return document.getElementById(id)};
+  function el(tag, cls, text){var n=document.createElement(tag); if(cls)n.className=cls; if(text!=null)n.textContent=text; return n}
+
+  var state = {view:"doa", idx:0, tab:"tulis"};
+  var replies = [];
+  var loaded = false;
+  var hasApi = !!API_URL;
+  var auth = null;
+  var isOwner = false;
+  var unlocked = false;
+  var lastErr = "", permState = "", connectDone = false, loadError = false, slow = false, shown = 24, loadTimer = null, q = null;
+  var AUTH = 0; /* diisi di bawah */
+  var lastDir = "next";
+
+  /* ---------- photo helpers ---------- */
+  function pol(key, i){
+    var p = PHOTOS[key]; var f = el("figure","pol");
+    f.style.setProperty("--r", ROT[i % ROT.length] + "deg");
+    var im = el("img"); im.src = p.src; im.alt = p.cap; im.loading = "lazy"; im.decoding = "async";
+    f.appendChild(im); f.appendChild(el("figcaption","",p.cap));
+    return f;
+  }
+  function tiles(keys, offset){
+    var frag = document.createDocumentFragment();
+    keys.forEach(function(k,i){frag.appendChild(pol(k, i+offset))});
+    return frag;
+  }
+
+  /* ---------- text with highlighted names ---------- */
+  var HL = /(Annisa, Masya, Alisa, Ratih,(?: dan)? Nayla|Dasa Semesta)/g;
+  function richPara(str){
+    var p = el("p");
+    str.split(HL).forEach(function(part){
+      if(!part) return;
+      if(part.indexOf("Annisa")===0 || part==="Dasa Semesta"){ p.appendChild(el("span","hl",part)); }
+      else p.appendChild(document.createTextNode(part));
+    });
+    return p;
+  }
+
+  /* ---------- login halaman balasan (penyaring tampilan, bukan keamanan sungguhan) ---------- */
+  function h53(str){var h1=0xdeadbeef,h2=0x41c6ce57;for(var i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);}
+  AUTH = 8405078510418323;
+  try{ var sv = sessionStorage.getItem("doa-auth"); if(sv) auth = JSON.parse(sv); }catch(e){ auth = null; }
+  function updateCount(){ var c=$("navcount"); c.textContent=String(replies.length); c.hidden=!unlocked; }
+
+  /* ---------- time ---------- */
+  function ago(ms){
+    if(!ms) return "";
+    var s = Math.max(0, Math.round((Date.now()-ms)/1000));
+    if(s<60) return "baru saja";
+    var m = Math.round(s/60); if(m<60) return m+" menit lalu";
+    var h = Math.round(m/60); if(h<24) return h+" jam lalu";
+    var d = Math.round(h/24); if(d<7) return d+" hari lalu";
+    try{ return new Date(ms).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}); }catch(e){ return d+" hari lalu"; }
+  }
+  function variant(r, i){
+    var n = 0, id = r.id || String(i);
+    for(var k=0;k<id.length;k++) n = (n*31 + id.charCodeAt(k)) % 997;
+    return n % 5;
+  }
+
+  /* ---------- replies strip (below slide text) ---------- */
+  function fillStrip(){
+    var row = $("rrow"); if(!row) return;
+    row.textContent = "";
+    if(!unlocked){ row.appendChild(el("p","empty","🔒 Balasan hanya bisa dilihat pengguna khusus.")); return; }
+    if(!replies.length){
+      var msg = !hasApi ? "Balasan akan tampil di sini setelah penyimpanan disambungkan."
+              : loaded ? "Belum ada balasan. Jadi yang pertama titip pesan di slide terakhir ya 🌷"
+              : "Memuat balasan…";
+      row.appendChild(el("p","empty",msg));
+      return;
+    }
+    replies.slice(0,8).forEach(function(r,i){
+      var c = el("div","mini c"+variant(r,i));
+      c.style.setProperty("--r", (i%2?1.5:-1.5)+"deg");
+      c.appendChild(el("span","s",r.sticker||"🌸"));
+      c.appendChild(el("b","",r.name||"Teman"));
+      var t = (r.pesan||r.kesan||"");
+      c.appendChild(el("p","", t.length>80 ? t.slice(0,80)+"…" : t));
+      row.appendChild(c);
+    });
+  }
+
+  /* ---------- slide rendering ---------- */
+  function renderSlide(){
+    var s = SLIDES[state.idx];
+    var card = $("card");
+    card.textContent = "";
+    card.className = "card in-" + lastDir;
+
+    ["a","b","c","d"].forEach(function(k,i){var e=el("span","stk "+k,s.stk[i]); card.appendChild(e)});
+
+    var frame = el("div","frame");
+    var top = el("div","strip top"); top.appendChild(tiles(s.top,0));
+    var left = el("div","side left"); left.appendChild(tiles(s.left,2));
+    var right = el("div","side right"); right.appendChild(tiles(s.right,5));
+    var bottom = el("div","strip bottom"); bottom.appendChild(tiles(s.bottom,3));
+    var content = el("div","content");
+
+    content.appendChild(el("span","chip",s.chip));
+
+    if(s.form){
+      content.appendChild(buildTabs());
+      content.appendChild(state.tab==="tulis" ? buildForm() : el("div"));
+    }else{
+      var text = el("div","text");
+      s.paras.forEach(function(p){
+        if(typeof p==="string") text.appendChild(richPara(p));
+        else if(p.greet) text.appendChild(el("p","greet",p.greet));
+        else if(p.amin) text.appendChild(el("p","amin",p.amin));
+      });
+      content.appendChild(text);
+    }
+
+    var strip = el("div","rstrip");
+    var head = el("div","rstrip-head");
+    head.appendChild(el("span","","💌 Balasan terbaru"));
+    var more = el("button","link","Lihat semua"); more.type="button"; more.addEventListener("click",function(){go("balasan")});
+    head.appendChild(more);
+    var row = el("div","rrow"); row.id = "rrow";
+    strip.appendChild(head); strip.appendChild(row);
+    content.appendChild(strip);
+
+    frame.appendChild(top); frame.appendChild(left); frame.appendChild(content); frame.appendChild(right); frame.appendChild(bottom);
+    card.appendChild(frame);
+    fillStrip();
+
+    /* controls */
+    $("prev").disabled = state.idx===0;
+    var next = $("next");
+    if(state.idx===SLIDES.length-1){ next.textContent="Lihat balasan 💌"; }
+    else { next.textContent="Lanjut ›"; }
+    var dots = $("dots"); dots.textContent="";
+    SLIDES.forEach(function(_,i){
+      var d = el("button","dot"); d.type="button"; d.setAttribute("aria-label","Slide "+(i+1));
+      if(i===state.idx) d.setAttribute("aria-current","true");
+      d.addEventListener("click",function(){ goSlide(i); });
+      dots.appendChild(d);
+    });
+  }
+
+  function goSlide(i){
+    if(i<0||i>=SLIDES.length||i===state.idx) return;
+    lastDir = i>state.idx ? "next" : "prev";
+    state.idx = i; state.tab = "tulis";
+    renderSlide();
+    window.scrollTo(0,0);
+  }
+
+  function buildTabs(){
+    var t = el("div","tabs"); t.setAttribute("role","tablist");
+    var a = el("button","tab","✍️ Tulis balasan"); a.type="button"; a.setAttribute("role","tab"); a.setAttribute("aria-selected","true");
+    var b = el("button","tab","💌 Lihat balasan"); b.type="button"; b.setAttribute("role","tab"); b.setAttribute("aria-selected","false");
+    b.addEventListener("click",function(){go("balasan")});
+    t.appendChild(a); t.appendChild(b);
+    return t;
+  }
+
+  /* ---------- reply form ---------- */
+  function buildForm(){
+    var f = el("form","form"); f.id="reply-form"; f.noValidate = true;
+    f.appendChild(el("h2","","Titip kesan & pesan buat kami"));
+    f.appendChild(el("p","sub","Tulisanmu akan muncul di halaman Balasan 💌"));
+
+    function field(id,label,node){var w=el("div","field"); var l=el("label","",label); l.htmlFor=id; w.appendChild(l); w.appendChild(node); return w}
+    var name = el("input"); name.id="f-name"; name.type="text"; name.maxLength=40; name.placeholder="Nama kamu"; name.autocomplete="name";
+    var kesan = el("textarea"); kesan.id="f-kesan"; kesan.rows=3; kesan.maxLength=400; kesan.placeholder="Kesanmu tentang kami…";
+    var pesan = el("textarea"); pesan.id="f-pesan"; pesan.rows=4; pesan.maxLength=600; pesan.placeholder="Pesan, doa, atau semangat buat kami…";
+    f.appendChild(field("f-name","Nama 🌼",name));
+    f.appendChild(field("f-kesan","Kesan 🍓",kesan));
+    f.appendChild(field("f-pesan","Pesan 💌",pesan));
+
+    var sw = el("div","field"); var sl = el("label","","Pilih stiker 🎀"); sl.removeAttribute("for"); sw.appendChild(sl);
+    var grid = el("div","stks"); grid.setAttribute("role","radiogroup"); grid.setAttribute("aria-label","Stiker");
+    STICKERS.forEach(function(s,i){
+      var inp = el("input"); inp.type="radio"; inp.name="stk"; inp.id="stk-"+i; inp.value=s; if(i===0) inp.checked=true;
+      var lb = el("label","",s); lb.htmlFor="stk-"+i; lb.setAttribute("aria-label","Stiker "+s);
+      grid.appendChild(inp); grid.appendChild(lb);
+    });
+    sw.appendChild(grid); f.appendChild(sw);
+
+    var err = el("p","err"); err.id="f-err"; err.setAttribute("role","alert"); f.appendChild(err);
+    var send = el("button","btn solid","Kirim balasan 💌"); send.type="submit"; send.id="f-send";
+    f.appendChild(send);
+
+    f.addEventListener("submit", function(e){ e.preventDefault(); submitReply(f); });
+    return f;
+  }
+
+  function collect(f){
+    var stk = f.querySelector('input[name="stk"]:checked');
+    return {
+      name: $("f-name").value.trim().slice(0,40),
+      kesan: $("f-kesan").value.trim().slice(0,400),
+      pesan: $("f-pesan").value.trim().slice(0,600),
+      sticker: stk ? stk.value : "🌸"
+    };
+  }
+
+  function replyText(d){
+    var t = "Kesan & pesan dari " + d.name + " " + d.sticker + "\n";
+    if(d.kesan) t += "\nKesan: " + d.kesan;
+    if(d.pesan) t += "\nPesan: " + d.pesan;
+    return t;
+  }
+
+  async function submitReply(f){
+    var err = $("f-err"); err.textContent = "";
+    var d = collect(f);
+    if(!d.name){ err.textContent = "Isi namanya dulu ya 🌷"; $("f-name").focus(); return; }
+    if(!d.kesan && !d.pesan){ err.textContent = "Tulis kesan atau pesannya dulu ya 🌷"; $("f-kesan").focus(); return; }
+    if(!hasApi){ showFallback(d); return; }
+    var btn = $("f-send"); btn.disabled = true; btn.textContent = "Mengirim…";
+    try{
+      await fetch(API_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({name:d.name,kesan:d.kesan,pesan:d.pesan,sticker:d.sticker})});
+      if(unlocked){
+        replies.unshift({id:"tmp"+Date.now(),createdAt:Date.now(),name:d.name,kesan:d.kesan,pesan:d.pesan,sticker:d.sticker});
+        updateCount(); setTimeout(fetchReplies, 3000);
+      }
+      showThanks(d);
+    }catch(e){
+      if(e && e.code==="quota_exceeded"){ err.textContent="Kotak balasan sudah penuh. Kabari kami lewat chat ya 🤍"; btn.disabled=false; btn.textContent="Kirim balasan 💌"; }
+      else if(e && e.code==="resource_exhausted"){ err.textContent="Terlalu cepat. Tunggu sebentar lalu kirim lagi ya."; btn.disabled=false; btn.textContent="Kirim balasan 💌"; }
+      else { showFallback(d); }
+    }
+  }
+
+  function swapPanel(node){
+    var f = $("reply-form"); if(!f) return;
+    f.replaceWith(node);
+  }
+
+  function showThanks(d){
+    var p = el("div","panel");
+    p.appendChild(el("h2","","Terkirim! Makasih ya " + d.sticker));
+    p.appendChild(el("p","","Kesan dan pesanmu sudah masuk ke halaman Balasan. Semoga doa baikmu kembali berlipat 🤍"));
+    var r = el("div","row");
+    var a = el("button","btn solid","Lihat balasan 💌"); a.type="button"; a.addEventListener("click",function(){go("balasan")});
+    var b = el("button","btn","Tulis lagi"); b.type="button"; b.addEventListener("click",function(){ renderSlide(); });
+    r.appendChild(a); r.appendChild(b); p.appendChild(r);
+    swapPanel(p);
+  }
+
+  function showFallback(d){
+    var txt = replyText(d);
+    var p = el("div","panel");
+    p.appendChild(el("h2","","Satu langkah lagi 🤍"));
+    p.appendChild(el("p","","Balasan belum bisa tersimpan langsung dari tampilan ini. Salin pesanmu di bawah, lalu kirim lewat WhatsApp ke kami ya."));
+    var ta = el("textarea"); ta.id="fb-text"; ta.readOnly = true; ta.value = txt; ta.setAttribute("aria-label","Pesan yang disalin");
+    p.appendChild(ta);
+    var r = el("div","row");
+    var cp = el("button","btn solid","Salin pesan"); cp.type="button";
+    cp.addEventListener("click", async function(){
+      try{ await navigator.clipboard.writeText(txt); cp.textContent = "Tersalin ✓"; }
+      catch(e){ ta.focus(); ta.select(); cp.textContent = "Teks sudah dipilih, tekan salin"; }
+    });
+    r.appendChild(cp);
+    if(WA_NUMBER){
+      var wa = el("a","btn","Buka WhatsApp"); wa.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(txt); wa.target="_blank"; wa.rel="noopener"; wa.style.textDecoration="none";
+      r.appendChild(wa);
+    }
+    var back = el("button","btn","Ubah tulisan"); back.type="button"; back.addEventListener("click",function(){ renderSlide(); });
+    r.appendChild(back);
+    p.appendChild(r);
+    swapPanel(p);
+  }
+
+  /* ---------- replies page ---------- */
+  function buildMosaic(){
+    var m = $("mosaic"); m.textContent = "";
+    ["a_full","d_one","c_left","b_left","c_bouq"].forEach(function(k,i){ m.appendChild(pol(k,i+1)); });
+    m.querySelectorAll("figcaption").forEach(function(c){c.style.display="none"});
+    m.querySelectorAll(".pol").forEach(function(p){p.style.paddingBottom="5px"});
+  }
+
+  function buildLogin(){
+    var f = el("form","panel login"); f.id="login-form"; f.noValidate=true;
+    f.appendChild(el("h2","","Masuk dulu ya 🔒"));
+    f.appendChild(el("p","","Balasan hanya bisa dilihat pengguna khusus. Masukkan username dan password untuk membukanya."));
+    function fld(id,label,type){var w=el("div","field"); w.style.width="100%"; var l=el("label","",label); l.htmlFor=id; var i=el("input"); i.id=id; i.type=type; i.autocomplete = type==="password" ? "current-password" : "username"; i.maxLength=60; w.appendChild(l); w.appendChild(i); return w;}
+    f.appendChild(fld("l-user","Username 🌼","text"));
+    f.appendChild(fld("l-pass","Password 🔑","password"));
+    var er = el("p","err"); er.id="l-err"; er.setAttribute("role","alert"); f.appendChild(er);
+    var b = el("button","btn solid","Masuk 🔓"); b.type="submit"; f.appendChild(b);
+    f.addEventListener("submit",function(e){
+      e.preventDefault();
+      var u = $("l-user").value.trim().toLowerCase(), pw = $("l-pass").value;
+      if(h53(u+"\n"+pw)!==AUTH){ er.textContent = "Maaf, balasan hanya untuk pengguna khusus 🔒"; return; }
+      auth = {u:u,p:pw};
+      er.textContent = "Memeriksa…";
+      tryUnlock().then(function(r){
+        if(r===true) return;
+        auth = null;
+        er.textContent = r==="error" ? "Belum bisa terhubung. Cek koneksi lalu coba lagi." : "Maaf, balasan hanya untuk pengguna khusus 🔒";
+      });
+    });
+    return f;
+  }
+
+  function renderReplies(){
+    updateCount();
+    fillStrip();
+    $("logout-btn").hidden = !unlocked;
+    var body = $("replies-body");
+    if(!unlocked && $("login-form")) return;
+    body.textContent = "";
+    if(!unlocked){
+      var wrap = el("div","note"); wrap.appendChild(buildLogin()); body.appendChild(wrap); return;
+    }
+    if(!replies.length){
+      var n = el("div","note");
+      if(!loaded && (hasApi || !connectDone)){ body.appendChild(buildLoading()); return; }
+      if(!hasApi) n.appendChild(el("p","","Penyimpanan balasan belum disambungkan. Ikuti PANDUAN.md untuk memasang."));
+      else if(loadError){ buildLoadError(n); }
+      else {
+        n.appendChild(el("p","","Belum ada balasan. Ayo jadi yang pertama titip pesan 🌷"));
+        var b = el("button","btn solid","✍️ Tulis balasan"); b.type="button"; b.addEventListener("click",openForm); n.appendChild(b);
+      }
+      body.appendChild(n); return;
+    }
+    var m = el("div","masonry");
+    replies.slice(0,shown).forEach(function(r,i){
+      var v = variant(r,i);
+      var c = el("article","reply v"+v);
+      c.style.setProperty("--r", ([-1.6,1.2,-0.8,1.8,-1.2])[i%5] + "deg");
+      c.appendChild(el("span","bigstk",r.sticker||"🌸"));
+      c.appendChild(el("h3","who",r.name||"Teman"));
+      c.appendChild(el("p","when",ago(r.createdAt)));
+      if(r.kesan){ c.appendChild(el("h4","","Kesan 🌼")); c.appendChild(el("p","",r.kesan)); }
+      if(r.pesan){ c.appendChild(el("h4","","Pesan 💌")); c.appendChild(el("p","",r.pesan)); }
+      m.appendChild(c);
+    });
+    body.appendChild(m);
+    if(replies.length>shown){
+      var more = el("div","note");
+      var mb = el("button","btn solid","Tampilkan lebih banyak"); mb.type="button";
+      mb.addEventListener("click",function(){ shown += 24; renderReplies(); });
+      more.appendChild(mb); body.appendChild(more);
+    }
+  }
+
+  function permButtons(row){ return; }
+
+  function buildLoadError(n){
+    n.appendChild(el("p","", permState==="denied" ? "Akses ke penyimpanan balasan ditolak. Buka Atur izin lalu aktifkan lagi." : "Balasan belum bisa dimuat."));
+    if(lastErr){ var d = el("p","","Kode: " + lastErr); d.style.fontSize="13px"; d.style.margin="0"; n.appendChild(d); }
+    var row = el("div","row"); row.style.justifyContent="center"; row.style.marginTop="10px";
+    var rb = el("button","btn solid","Coba lagi"); rb.type="button"; rb.addEventListener("click",retryLoad);
+    row.appendChild(rb); permButtons(row); n.appendChild(row);
+  }
+
+  function buildLoading(){
+    var w = el("div");
+    var m = el("div","masonry");
+    for(var i=0;i<3;i++){
+      var c = el("div","reply skel"); c.style.setProperty("--r",(i%2?1:-1)+"deg");
+      c.appendChild(el("div","sk l1")); c.appendChild(el("div","sk l2")); c.appendChild(el("div","sk l3"));
+      m.appendChild(c);
+    }
+    w.appendChild(m);
+    var note = el("p","note", slow ? "Masih memuat. Jika muncul kotak izin, pilih Izinkan." : "Memuat balasan…");
+    if(slow){
+      var row = el("div","row"); row.style.justifyContent="center"; row.style.marginTop="10px";
+      var b = el("button","btn","Coba lagi"); b.type="button"; b.addEventListener("click",retryLoad);
+      row.appendChild(b); permButtons(row); note.appendChild(row);
+    }
+    w.appendChild(note);
+    return w;
+  }
+
+  /* ---------- navigation ---------- */
+  function openForm(){
+    state.view = "doa"; state.idx = SLIDES.length-1; state.tab = "tulis"; lastDir = "next";
+    show();
+  }
+  function go(view){
+    if(view==="balasan"){ state.view="balasan"; }
+    else { state.view="doa"; }
+    show();
+  }
+  function show(){
+    var doa = state.view==="doa";
+    $("view-doa").hidden = !doa;
+    $("view-balasan").hidden = doa;
+    document.querySelectorAll(".navbtn").forEach(function(b){
+      if(b.getAttribute("data-go")===state.view) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
+    });
+    if(doa) renderSlide(); else renderReplies();
+    window.scrollTo(0,0);
+  }
+
+  document.querySelectorAll("[data-go]").forEach(function(b){
+    b.addEventListener("click",function(){ go(b.getAttribute("data-go")); });
+  });
+  $("write-from-list").addEventListener("click", openForm);
+  $("reload-list").addEventListener("click", function(){ if(unlocked) retryLoad(); });
+  $("logout-btn").addEventListener("click", function(){
+    unlocked = false; auth = null; replies = [];
+    try{ sessionStorage.removeItem("doa-auth"); }catch(e){}
+    renderReplies();
+  });
+  $("prev").addEventListener("click",function(){ goSlide(state.idx-1); });
+  $("next").addEventListener("click",function(){
+    if(state.idx===SLIDES.length-1) go("balasan"); else goSlide(state.idx+1);
+  });
+
+  /* swipe */
+  var tx=0, ty=0;
+  var stage = $("view-doa");
+  stage.addEventListener("touchstart",function(e){ var t=e.changedTouches[0]; tx=t.clientX; ty=t.clientY; },{passive:true});
+  stage.addEventListener("touchend",function(e){
+    var t=e.changedTouches[0]; var dx=t.clientX-tx, dy=t.clientY-ty;
+    if(Math.abs(dx)>70 && Math.abs(dx)>Math.abs(dy)*1.6){
+      var tag = (e.target && e.target.tagName) || "";
+      if(tag==="INPUT"||tag==="TEXTAREA") return;
+      if(dx<0 && state.idx<SLIDES.length-1) goSlide(state.idx+1);
+      if(dx>0) goSlide(state.idx-1);
+    }
+  },{passive:true});
+  document.addEventListener("keydown",function(e){
+    if(state.view!=="doa") return;
+    var tag = (document.activeElement && document.activeElement.tagName) || "";
+    if(tag==="INPUT"||tag==="TEXTAREA") return;
+    if(e.key==="ArrowRight" && state.idx<SLIDES.length-1) goSlide(state.idx+1);
+    if(e.key==="ArrowLeft") goSlide(state.idx-1);
+  });
+
+  /* ---------- boot ---------- */
+  buildMosaic();
+  updateCount();
+  if(location.hash==="#balasan") state.view="balasan";
+  show();
+
+  window.addEventListener("hashchange",function(){
+    var v = location.hash==="#balasan" ? "balasan" : "doa";
+    if(v!==state.view) go(v);
+  });
+
+  function refreshViews(){
+    updateCount();
+    if(state.view==="balasan") renderReplies(); else fillStrip();
+  }
+  function applyList(list){
+    replies = list.map(function(x){ return {id:String(x.id), createdAt:Number(x.createdAt)||0, name:x.name, kesan:x.kesan, pesan:x.pesan, sticker:x.sticker}; })
+      .sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); }).slice(0,100);
+    loaded = true; loadError = false; slow = false; lastErr = "";
+    clearTimeout(loadTimer);
+    refreshViews();
+  }
+  function failLoad(e){
+    clearTimeout(loadTimer);
+    try{ lastErr = e ? String(e.code || e.message || e) : "tidak diketahui"; }catch(x){ lastErr = "tidak diketahui"; }
+    if(!replies.length){ loadError = true; }
+    loaded = true;
+    refreshViews();
+  }
+  function markSlow(){ if(!loaded){ slow = true; refreshViews(); } }
+  function url(){ return API_URL + "?u=" + encodeURIComponent(auth.u) + "&p=" + encodeURIComponent(auth.p) + "&t=" + Date.now(); }
+
+  async function fetchReplies(){
+    if(!hasApi || !auth) return;
+    try{
+      var res = await fetch(url());
+      var j = await res.json();
+      if(j && j.ok){ applyList(j.replies || []); }
+      else { failLoad(j && j.error); }
+    }catch(e){ failLoad(e); }
+  }
+  function retryLoad(){
+    if(!hasApi || !auth) return;
+    loaded = false; loadError = false; slow = false;
+    clearTimeout(loadTimer); loadTimer = setTimeout(markSlow, 8000);
+    refreshViews();
+    fetchReplies();
+  }
+  /* login: true = berhasil, "denied" = ditolak server, "error" = tidak terhubung */
+  async function tryUnlock(){
+    if(!hasApi){ unlocked = true; loaded = true; refreshViews(); return true; }
+    try{
+      var res = await fetch(url());
+      var j = await res.json();
+      if(j && j.ok){
+        unlocked = true;
+        try{ sessionStorage.setItem("doa-auth", JSON.stringify(auth)); }catch(e){}
+        applyList(j.replies || []);
+        return true;
+      }
+      return "denied";
+    }catch(e){ return "error"; }
+  }
+
+  async function connect(){
+    connectDone = true;
+    if(auth){ var r = await tryUnlock(); if(r!==true){ auth = null; try{ sessionStorage.removeItem("doa-auth"); }catch(e){} } }
+    loaded = true; refreshViews();
+  }
+  connect();
+})();
+</script>
+</body>
+</html>
